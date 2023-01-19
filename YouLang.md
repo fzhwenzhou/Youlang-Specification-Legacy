@@ -432,7 +432,8 @@ Here is the grammar:
     ...
 }
 ```
-Example
+Example:
+```
 print_info = (name, jobs...){
     println "Your name is " + name
     for job in jobs {
@@ -443,3 +444,4 @@ main = {
     print_info("Lisa", "teacher")
     print_info("Mario", "professor", "streamer")
 }
+```
