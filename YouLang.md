@@ -101,7 +101,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: and, async, await, break, by, const, continue, dynamic, else, emun, exec, false, for, goto, if, immut, implements, import, in, match, mod, module, not, or, outer, public, return, self, shl, shr, static, struct, super, to, true, unsafe, while, xor.   
+Reserved words are words that cannot be used as identifiers. These words are: and, async, await, break, by, const, continue, dynamic, else, emun, exec, false, for, goto, if, immut, implements, import, in, inner, match, mod, module, not, or, public, return, self, shl, shr, static, struct, super, to, true, unsafe, while, xor.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
