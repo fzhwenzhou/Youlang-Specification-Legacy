@@ -6,7 +6,7 @@ Inside "[]" is regarded as programming concepts instead of literals.
 Use "[[]]" to specify a code block.      
 "..." is used to duplicate the previous block or statement (but not literal) for 0 or more times.     
 "[opt]" is a flag to indicate that this code block is optional. It is paired with "[/opt]"
-"[opt if condition]" is used to indicate that this code block is optional if the condition holds.     "
+"[opt if condition]" is used to indicate that this code block is optional if the condition holds.     
 "[statement returns type]" is used to indicate that the statement returns a specific type of a kind of type(like integer).     
 ".." is used to duplicate the previous block or statement (but not literal or [opt]) for 1 time.
 Some logical symbols: &(and), |(or), !(not)     
@@ -101,7 +101,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: and, async, await, break, by, const, continue, dynamic, else, emun, exec, false, for, goto, if, immut, implements, import, in, interface, match, mod, module, not, or, public, return, self, shl, shr, static, struct, super, to, true, unsafe, while, xor.   
+Reserved words are words that cannot be used as identifiers. These words are: and, async, await, break, by, const, continue, dynamic, else, emun, exec, false, for, goto, if, immut, implements, import, in, match, mod, module, not, or, outer, public, return, self, shl, shr, static, struct, super, to, true, unsafe, while, xor.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -148,7 +148,7 @@ test_string = "Howdy"
 test_int = 123456 // Can be modified.
 test_float = 12345 // Will throw an error.
 // It seems to be a dynamically typed language, but it's actually a statically typed language. So changing variable's type is not permitted.
-uninit_int = i32(uninit = true) // Uninitialized variable. Use constructor function.
+uninit_int = i32(uninit := true) // Uninitialized variable. Use constructor function.
 ```
 This method is also applicable for defining an impure function. We will talk about it later.
 
@@ -169,6 +169,7 @@ c = -3 ** 5 // -243.0, a float.
 
 ## Logical Operation and Bitwise Operation
 Logical operation and bitwise operation are also what you expected.   
+Ternary operator: ?: (works as if/else but returns a value)       
 Binary operators: >, <, >=, <=, ==(equals), !=(not equals), and, or, xor, shl (shift left), shr (shift right)     
 Unary operator: not
 The operator "and", "or", "xor" and "not" are overloaded for logical operation. If both of the operands are booleans, then the return value is boolean. If one of the operand is boolean and one is integer, we will regard "true" as 1 and "false" as 0 to do bitwise operation.   
@@ -291,17 +292,18 @@ Define Grammar:
 ```
 // Initialize with returned array
 [opt][modifier] [/opt][identifier] = [value|expression returns array]
+// Note that this method just created a pointer to the original array. If the value of this array is changed, the original array will also change.
 // Or initialize with array literal
 [opt][modifier] [/opt][identifier] = \[[element][opt], ..[/opt]...\]
 // Or do not initialize
-[opt][modifier] [/opt][identifier] = array<[type]>([dimension],[opt] ..,[/opt]...uninit = true)
+[opt][modifier] [/opt][identifier] = array<[type]>([dimension],[opt] ..,[/opt]...uninit := true)
 // Or initialize with default value (0 for integers, 0.0 for floats and false for boolean)
 [opt][modifier] [/opt][identifier] = array<[type]>([dimension],[opt] ..,[/opt]...)
 ```
 Example:
 ```
 a = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]] // a 4 * 3 array
-b = array<f64>(100, uninit = true) // a f64 array without initializing.
+b = array<f64>(100, uninit := true) // a f64 array without initializing.
 c = array<char>(50) // a char array initialized with '\0'.
 ```
 Invoke Grammar:
@@ -315,3 +317,129 @@ b = a[3][1] // b is 11
 a[3][1] = 5 // Now a[3][1] is 5
 c = a[5][5] // Out-of-bound error. Can be closed.
 ```
+
+Sequential Search and Judge If Present Grammar:
+```
+[value|expression][opt], ..[/opt]... in [value|expression returns array]
+```
+Example:
+```
+if 12, 23 in [1, 2, 3, 12, 15, 26] {
+    println "In the array"
+}
+else {
+    println "Not all in the array"
+}
+```
+## Function
+Function is an important component in procedure oriented programming. Every program starts from "main" function, the starting point. In Youlang, the form of defining a function is almost the same as defining a closure.    
+
+The grammar is as follows:
+```
+[identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+    [statement]
+    ...
+}
+```
+If there is no explicit "return" statement in the function, then the function will return the value of the last statement. If you want to return nothing but the last statement do return something, just place "return" in the end.    
+
+To call a function, the grammar is as follows:    
+```
+[identifier][opt if no parameter] [opt][parameter][/opt][opt], ...[/opt]
+```
+The return value will be ignored.     
+
+To use a function's return value in other statements, the bracket cannot be ignored because it will make the compiler unable to tell whether you want to use the return value or the function itself.     
+
+Example:
+```
+fib = (n){
+    n == 0 or n == 1 ? n : fib(n - 1) + fib(n - 2)
+}
+hello_world = {
+    println "Hello, World!"
+}
+main = {
+    println fib(10) // 55
+    hello_world // Hello, World!
+}
+```
+
+Function prototype and function overload is not present in Youlang. Function prototype is useless in this language as you can define functions after using them. Function overload is not allowed as it will mingle some usage. You can implement this function yourself by generic, however.    
+
+### Lambda Function
+Lambda functions are almost the same as other functions. The grammar is as follows:    
+```
+[opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+    [statement]
+    ...
+}
+```
+Lambda functions can act as a parameter of a function.    
+
+### Optional Argument
+You can define an optional argument by initializing an argument's value when defining an function. Note that initializing one parameter also means that you specify the data type.     
+The grammer is as follows:
+```
+[identifier] = [opt if no parameter]([[[opt][parameter] = [value][/opt][opt]]], ...[/opt])[/opt]{
+    [statement]
+    ...
+}
+```
+When using this function, you can just left one argument to blank when you prefer to use the default value (but you should keep the comma there). Also, you can use ":=" operator to specify the parameters you would like to use. With this operator, you can change the order of the parameters.    
+
+Example:
+```
+print_info = (name, sex, school = "", age){
+    println "Your name is " + name
+    println "Your sex is " + sex
+    println "Your age is " + age
+    println "Your school is" + school
+}
+main = {
+    print_info("Candy", "Female", "Yale", 20)
+    print_info("Cindy", "Female",, 15) // Optional argument
+    print_info(name := "Cathy", age := 30, sex := "Female") // Change the order
+}
+```
+
+### Explicit Data Type
+Combining optional argument and uninitialized variable, you can explicitly define a function's arguments' and return value's data type. The basic concept is to use the constructor of the data types.    
+
+Example:
+```
+gcd = (x = i32(uninit := true), y = i32(uninit := true)){
+    r = x mod y
+    while r != 0 {
+        x = y
+        y = r
+        r = x % y
+    }
+    i32(y)
+}
+main = {
+    println gcd(5, 15) // 5
+    println gcd(5.0, 15.0) // 5, implicitly convert the data type to i32.
+}
+```
+
+### Variable Argument List
+There could be at most one variable argument list. And the variable argument list must be at the end of all the arguments. The argument list will be regarded as an array in the function. All of the elements' data types must be the same.     
+Here is the grammar:
+```
+[identifier] = ([[opt][parameter][/opt][opt], ...[/opt], [parameter]\.\.\.]) {
+    [statement]
+    ...
+}
+```
+Example
+print_info = (name, jobs...){
+    println "Your name is " + name
+    for job in jobs {
+        println "One of your job is " + job
+    }
+}
+main = {
+    print_info("Lisa", "teacher")
+    print_info("Mario", "professor", "streamer")
+}
