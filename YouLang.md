@@ -101,7 +101,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: and, async, await, break, by, const, continue, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, mod, module, not, or, public, return, self, shl, shr, static, struct, super, to, true, unsafe, while, xor.   
+Reserved words are words that cannot be used as identifiers. These words are: async, await, break, by, const, continue, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, module, public, return, self, static, struct, super, to, true, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -157,7 +157,7 @@ This method is also applicable for defining an impure function. We will talk abo
 
 ## Arithmetic
 Arithmetic is what you expected in mathematics.    
-Binary operators: +, -, *, /, mod, **(power), =     
+Binary operators: +, -, *, /, %(mod), **(power), =     
 Unary operators: +(positive), -(negative), ++(increase), --(decrease)     
 Note: If both the operands of "/" are integers, then the result is a flooring-down integer. Or else the result is a float.    
 Remark: You can combine one binary operator and "=" to shorten "[variable] = [variable] + [expression]".
