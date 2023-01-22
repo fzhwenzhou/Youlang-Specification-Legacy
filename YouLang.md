@@ -94,14 +94,14 @@ We will talk about it later.
 A range is a special abstract data type that has literals. It is a closed interval.   
 Grammar:
 ```
-[value|expression returns integer] to .. by ..
+[value|expression returns integer] to .. [opt]by ..[/opt]
 ```
 
 ## Identifier
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: and, async, await, break, by, const, continue, dynamic, else, emun, exec, false, for, goto, if, immut, implements, import, in, inner, match, mod, module, not, or, public, return, self, shl, shr, static, struct, super, to, true, unsafe, while, xor.   
+Reserved words are words that cannot be used as identifiers. These words are: and, async, await, break, by, const, continue, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, mod, module, not, or, public, return, self, shl, shr, static, struct, super, to, true, unsafe, while, xor.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -110,7 +110,7 @@ Goto is a keyword that is useless. It is listed in the reserved words because we
 A constant is a value that binds to an identifier. The value must be known, or at least could be known at compile time. Defining constants uses the keyword "const".    
 Grammar:
 ```
-const [identifier] = [value|expression] 
+const [identifier][opt], ..[/opt] = [value|expression][opt], ..[/opt] 
 ```
 Here are some examples:   
 ```
@@ -124,13 +124,15 @@ const MAX_I32 = 2147483647
 An immutable variable is a value that cannot be known at compile time, but doesn't need to be changed at runtime. The variable can be rebinded, but cannot be reassigned. Defining immutable constants uses the keyword "immut".    
 Grammar:
 ```
-immut [identifier] = [value|expression]
+immut [identifier][opt], ..[/opt] = [value|expression][opt], ..[/opt]
 ```
 Here are some examples:
 ```
 immut test_int = 12345
 immut test_float = 1.23f128
 immut test_string = "Howdy"
+immut a, b = 1, 2
+immut a, b = b, a // Can rebind
 ```
 This method is also applicable for defining a pure function. We will talk about it later.
 
@@ -138,17 +140,18 @@ This method is also applicable for defining a pure function. We will talk about 
 A mutable variable is a value that need to be changed at runtime.    
 Grammar:
 ```
-[identifier] = [value|expression]
+[[[identifier][opt]: [data type][/opt] [opt if uninitialized]]][opt], ..[/opt]= [value|expression][/opt][opt], ..[/opt]
 ```
 Here are some examples:
 ```
 test_int = 12345
 test_float = 1.23f128
 test_string = "Howdy"
+test_1, test_2 = "1", 2
 test_int = 123456 // Can be modified.
-test_float = 12345 // Will throw an error.
-// It seems to be a dynamically typed language, but it's actually a statically typed language. So changing variable's type is not permitted.
-uninit_int = i32(uninit := true) // Uninitialized variable. Use constructor function.
+test_float = 12345 // Will be converted to float automatically.
+// It seems to be a dynamically typed language, but it's actually a statically typed language. So the value will be implicitly converted to the suitable data type if possible. Otherwise, it will throw an error.
+uninit_int: i32 // Uninitialized variable.
 ```
 This method is also applicable for defining an impure function. We will talk about it later.
 
@@ -170,19 +173,55 @@ c = -3 ** 5 // -243.0, a float.
 ## Logical Operation and Bitwise Operation
 Logical operation and bitwise operation are also what you expected.   
 Ternary operator: ?: (works as if/else but returns a value)       
-Binary operators: >, <, >=, <=, ==(equals), !=(not equals), and, or, xor, shl (shift left), shr (shift right)     
-Unary operator: not
+Binary operators: >, <, >=, <=, ==(equals), !=(not equals), && (and), || (or), & (bit-and), | (bit-or), ^ (bit-xor), << (shift left), >> (shift right)     
+Unary operator: ! (not), ~(bit-not)
 The operator "and", "or", "xor" and "not" are overloaded for logical operation. If both of the operands are booleans, then the return value is boolean. If one of the operand is boolean and one is integer, we will regard "true" as 1 and "false" as 0 to do bitwise operation.   
 Remark: The priority of all the logical operations are the same, and lower than bitwise operation. Then priority of all the bitwise operations are the same, and lower than arithmetic operations.
 Here are some examples:
 ```
-a = 2 and 3 // 2
-b = true or false and true // true
-c = 2 + (5 and 3) // 1
-d = 1 shl 5 // 32
+a = 2 & 3 // 2
+b = true || false && true // true
+c = 2 + (5 & 3) // 1
+d = 1 << 5 // 32
 ```
 
 ## Control Flows
+### Scope
+The variables created inside the scope will be automatically deleted when the scope is end. This can simplify memory management.     
+Grammar:
+```
+exec {
+    [statement]
+    ...
+}
+```
+Example:
+```
+a = 1
+exec {
+    b = 2
+    c = a + b
+    println c
+}
+println a
+// b and c are no longer accessible.
+```
+Another characteristic is that it can have "return values". It is actually very different from function, because it is expanded into the procedure and does not need function call.    
+Example:
+```
+a, b = exec {
+    s = 0
+    i: i32
+    for i in 1 to 100 {
+        s += i
+    }
+    s, i
+}
+println a // 5050
+println b // 101
+```
+
+
 ### If Statement
 If statement is the most common branching statement.    
 Grammar:
@@ -296,15 +335,15 @@ Define Grammar:
 // Or initialize with array literal
 [opt][modifier] [/opt][identifier] = \[[element][opt], ..[/opt]...\]
 // Or do not initialize
-[opt][modifier] [/opt][identifier] = array<[type]>([dimension],[opt] ..,[/opt]...uninit := true)
-// Or initialize with default value (0 for integers, 0.0 for floats and false for boolean)
-[opt][modifier] [/opt][identifier] = array<[type]>([dimension],[opt] ..,[/opt]...)
+[opt][modifier] [/opt][identifier]: [data type][[\[[dimension]\]]]...
+// Or initialize with default value
+[opt][modifier] [/opt][identifier]: [data type][[\[[dimension]\]]]... = [value]
 ```
 Example:
 ```
 a = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]] // a 4 * 3 array
-b = array<f64>(100, uninit := true) // a f64 array without initializing.
-c = array<char>(50) // a char array initialized with '\0'.
+b: f64[100] // a f64 array without initializing.
+c: char[50] = 0 // a char array initialized with '\0'.
 ```
 Invoke Grammar:
 ```
@@ -315,7 +354,7 @@ Example:
 a = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]]
 b = a[3][1] // b is 11
 a[3][1] = 5 // Now a[3][1] is 5
-c = a[5][5] // Out-of-bound error. Can be closed.
+c = a[5][5] // Out-of-bound error. Can be disabled.
 ```
 
 Sequential Search and Judge If Present Grammar:
@@ -331,8 +370,10 @@ else {
     println "Not all in the array"
 }
 ```
+This is also applicable for strings.
+
 ## Function
-Function is an important component in procedure oriented programming. Every program starts from "main" function, the starting point. In Youlang, the form of defining a function is almost the same as defining a closure.    
+Function is an important component in procedure oriented programming. Every program starts from "main" function, the starting point. In Youlang, the form of defining a function is almost the same as defining a closure. One function can have multiple return values (separated by commas). But actually, it is returning a tuple containing these values.    
 
 The grammar is as follows:
 ```
@@ -359,9 +400,13 @@ fib = (n){
 hello_world = {
     println "Hello, World!"
 }
+swap = (a, b){
+    b, a
+}
 main = {
     println fib(10) // 55
     hello_world // Hello, World!
+    a, b = swap(1, 2) // a is 2, b is 1.
 }
 ```
 
@@ -404,18 +449,18 @@ main = {
 ```
 
 ### Explicit Data Type
-Combining optional argument and uninitialized variable, you can explicitly define a function's arguments' and return value's data type. The basic concept is to use the constructor of the data types.    
+Like explicitly defining the data type of a variable, defining the data type of function parameters also uses colons.  
 
 Example:
 ```
-gcd = (x = i32(uninit := true), y = i32(uninit := true)){
+gcd = (x: i32, y: i32){
     r = x mod y
     while r != 0 {
         x = y
         y = r
         r = x % y
     }
-    i32(y)
+    i32(y) // Not necessary because y itself is i32.
 }
 main = {
     println gcd(5, 15) // 5
@@ -445,3 +490,5 @@ main = {
     print_info("Mario", "professor", "streamer")
 }
 ```
+
+## Enumerate
