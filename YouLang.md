@@ -101,7 +101,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: async, await, break, by, const, continue, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, module, public, return, self, static, struct, super, to, true, unsafe, while.   
+Reserved words are words that cannot be used as identifiers. These words are: async, await, break, by, catch, const, continue, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -454,7 +454,7 @@ Like explicitly defining the data type of a variable, defining the data type of 
 Example:
 ```
 gcd = (x: i32, y: i32){
-    r = x mod y
+    r = x % y
     while r != 0 {
         x = y
         y = r
@@ -468,8 +468,8 @@ main = {
 }
 ```
 
-### Variable Argument List
-There could be at most one variable argument list. And the variable argument list must be at the end of all the arguments. The argument list will be regarded as an array in the function. All of the elements' data types must be the same.     
+### Variadic Argument List
+There could be at most one variadic argument list. And the variadic argument list must be at the end of all the arguments. The argument list will be regarded as an array in the function. All of the elements' data types must be the same.     
 Here is the grammar:
 ```
 [identifier] = ([[opt][parameter][/opt][opt], ...[/opt], [parameter]\.\.\.]) {
