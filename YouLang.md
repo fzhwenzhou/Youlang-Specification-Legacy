@@ -101,7 +101,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: async, await, break, by, catch, const, continue, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
+Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -282,11 +282,18 @@ match [variable] {
 ```
 Example:
 ```
-a = "apple"
+a = "apple" // string
 match a {
     "apple", "pear", "orange" -> println "fruit"
     "tomato", "potato", "garbage" -> println "vegitable"
     else -> println "unknown"
+}
+n = 14 // number
+match n {
+    1, 2 -> println "Smaller than 3"
+    3 to 15 -> println "Between 3 and 15" // range
+    15 to 31 by 2 -> println "Odd number between 15 and 31"
+    else -> println "Others"
 }
 ```
 
@@ -491,4 +498,70 @@ main = {
 }
 ```
 
-## Enumerate
+## Object Oriented Programming     
+OOP is an important concept in modern programming. Three basic components in OOP are encapsulation, polymorphism and inheritance. 
+
+### Structure
+Structure is an abstract data type which can store a bundle of relative data. But unlike many programming languages, it can have functions (methods), so it is more like a class. It cannot be inherited.      
+Defining a structure:
+```
+[identifier] = struct {
+    [opt][opt][permission][/opt][variable definition][/opt] // Properties
+    ...
+    [opt][opt][permission][/opt][function definition][/opt] // Methods
+    ...
+    [opt][prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Initializer
+    [opt]~[prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Deconstructor
+}
+```
+Using a structure:
+```
+[identifier] = [struct name]([opt][parameter][/opt][opt], ...[/opt]) // Have initializer
+[identifier] = [struct name]([opt][property] := [value|expression][/opt][opt], ...[/opt]) // Do not have initializer
+```
+Invoke:
+```
+[identifier].[property|method]
+```
+Example:
+```
+Student = struct {
+    id: i32
+    public name: string // Not suggested
+    public grade: i32 // Also not suggested
+}
+Teacher = struct {
+    id: i32
+    name: string
+    position: string
+    public set_position = (position){
+        self.position = position
+    }
+    public print_info = {
+        println name + ": " + position
+    }
+    Teacher = (id, name, position){
+        self.id = id
+        self.name = name
+        self.position = position
+    }
+    ~Teacher = {
+        println "Deconstructor"
+    }
+}
+main = {
+    student = Student(id := 20230101, name := "Catherine", grade := 96)
+    teacher = Teacher(12345678, "Alice", "Assistant Professor")
+    println student.name + ": " + student.grade
+    teacher.set_position "Vice Professor"
+    teacher.print_info
+    del teacher // delete the object and invoke deconstructor
+}
+```
+Only "public" properties and methods can be used outside the structure (class). "self" keyword is used to avoid naming confusion. It is used to refer the variable outside the scope. "del" keyword is used to delete one object.
