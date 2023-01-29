@@ -30,7 +30,7 @@ main = {
 
 We will explain it later.
 ## Basic Grammar
-The statements are separated by semicolons(;). However, the semicolon at the end of one line can be omitted. Use back-slash("\") to continue a line. 
+The statements are separated by semicolons( ; ). However, the semicolon at the end of one line can be omitted. Use back-slash("\") to continue a line. 
 A code block starts with "{" and ends with "}".
 
 
@@ -502,7 +502,7 @@ main = {
 OOP is an important concept in modern programming. Three basic components in OOP are encapsulation, polymorphism and inheritance. 
 
 ### Structure
-Structure is an abstract data type which can store a bundle of relative data. But unlike many programming languages, it can have functions (methods), so it is more like a class. It cannot be inherited.      
+Structure is an abstract data type which can store a bundle of relative data. But unlike some programming languages, it can have functions (methods), so it is more like a class. It cannot be inherited.      
 Defining a structure:
 ```
 [identifier] = struct {
@@ -564,4 +564,71 @@ main = {
     del teacher // delete the object and invoke deconstructor
 }
 ```
-Only "public" properties and methods can be used outside the structure (class). "self" keyword is used to avoid naming confusion. It is used to refer the variable outside the scope. "del" keyword is used to delete one object.
+Only "public" properties and methods can be used outside the structure (class). "self" keyword is used to avoid naming confusion. It is used to refer the variable outside the scope. "del" keyword is used to delete one object.    
+
+### Abstract Structure
+An abstract structure can contain anything that can be in a structure. It can also contain the declaration of methods (called abstract methods). It cannot be instantiated, but can be implemented by other structures.          
+Grammar:    
+```
+[identifier] = abstract struct {
+    [opt][opt][permission][/opt][variable definition][/opt] // Properties
+    ...
+    [opt][opt][permission][/opt][opt]abstract[/opt][function definition][/opt] // Methods
+    ...
+    [opt][prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Initializer
+    [opt]~[prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Deconstructor
+}
+```
+Using an abstract structure:
+```
+[identifier] = struct implements [identifier] {
+    [opt][opt][permission][/opt][variable definition][/opt] // Properties
+    ...
+    [opt][opt][permission][/opt][function definition][/opt] // Methods
+    ...
+    [opt][prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Initializer
+    [opt]~[prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Deconstructor
+}
+```
+You can override the methods in the abstract structure. You need to implement all the abstract methods.     
+Example:
+```
+Animal = abstract struct {
+    eat = abstract {} // The function body should be empty
+    sleep = abstract {}
+}
+Dog = struct implements Animal {
+    eat = {
+        println "Dog eats."
+    }
+    sleep = {
+        println "Dog sleeps."
+    }
+}
+Cat = struct implements Animal {
+    eat = {
+        println "Cat eats."
+    }
+    sleep = {
+        println "Cat sleeps."
+    }
+}
+main = {
+    dog = Dog()
+    cat = Cat()
+    dog.eat
+    cat.sleep
+}
+```
