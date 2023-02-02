@@ -101,7 +101,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
+Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -422,7 +422,7 @@ Function prototype and function overload is not present in Youlang. Function pro
 ### Lambda Function
 Lambda functions are almost the same as other functions. The grammar is as follows:    
 ```
-[opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+lambda [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
     [statement]
     ...
 }
@@ -497,6 +497,13 @@ main = {
     print_info("Mario", "professor", "streamer")
 }
 ```
+
+### Function Returning Constants
+Sometimes you don't want other code to change the returned object. The "const" keyword will make the returned object pointer not changable.
+
+### Pure Function
+A pure function is a function that is unable to change variables created outside. Also, the return value should be the same if the parameters are the same, whenever invoking it. Therefore, there isn't any side effect.
+
 
 ## Object Oriented Programming     
 OOP is an important concept in modern programming. Three basic components in OOP are encapsulation, polymorphism and inheritance. 
@@ -632,3 +639,5 @@ main = {
     cat.sleep
 }
 ```
+
+### Enumeration
