@@ -101,7 +101,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
+Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, finally, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -298,10 +298,10 @@ match n {
 ```
 
 ### While Statement
-While statement is used for execute one code block repeatedly if the condition is true. It is useful if the looping time is unknown.     
+While statement is used for execute one code block repeatedly if the condition is true. It is useful if the looping time is unknown. One statement can have one tag to identify.     
 Grammar:
 ```
-while [condition] {
+[opt][tag]:[/opt]while [condition] {
     [statement]
     ...
 }
@@ -316,10 +316,10 @@ println a // 128
 ```
 
 ### For Statement
-For statement is used to iterate one iterable object. Range is one common iterable object. Array is another which will be discussed on the following.     
+For statement is used to iterate one iterable object. Range is one common iterable object. Array is another which will be discussed on the following. One statement can have one tag to identify.     
 Grammar:
 ```
-for [variable|identifier] in [variable|statement returns iterable] {
+[opt][tag]:[/opt]for [variable|identifier] in [variable|statement returns iterable] {
     [statement]
     ...
 }
@@ -331,6 +331,14 @@ for i in 1 to 10 by 2 {
 }
 ```
 It will print all the odd numbers between 1 and 10.    
+
+### Continue and Break
+Continue statement makes it skip the other statements and directly go to the next loop. Break statement makes a loop stop. Tags can be used after it to specify the loop.     
+Grammar:
+```
+continue [opt][tag][/opt]
+break [opt][tag][/opt]
+```
 
 ## Array
 Array is a fixed-length sequence for a specific data type. The dimensions must be constants.    
@@ -467,11 +475,35 @@ gcd = (x: i32, y: i32){
         y = r
         r = x % y
     }
-    i32(y) // Not necessary because y itself is i32.
+    i32(y) // Not necessary because y itself is i32. In Youlang, type casting is just like invoking an function.
 }
 main = {
     println gcd(5, 15) // 5
     println gcd(5.0, 15.0) // 5, implicitly convert the data type to i32.
+}
+```
+
+### Explicit Generic
+Actually, if you don't define the data types of function parameters explicitly, then the function itself is a generic function. However, sometimes we need to access the data type inside the function or limit the data types of parameters to some extent. Therefore, you can use explicit generic function.      
+Grammar:
+```
+[identifier] = <[type identifier][opt], ...[/opt]>[opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+    [statement]
+    ...
+}
+```
+Invoking grammar:
+```
+[identifier]<[type][opt], ...[/opt]>[opt if no parameter] [opt][parameter][/opt][opt], ...[/opt]
+```
+Example:
+```
+add = <T>(a: T, b: T){
+    a + b
+}
+main = {
+    a, b = 1, 2
+    println add<i32>(a, b) // 3
 }
 ```
 
@@ -503,7 +535,6 @@ Sometimes you don't want other code to change the returned object. The "const" k
 
 ### Pure Function
 A pure function is a function that is unable to change variables created outside. Also, the return value should be the same if the parameters are the same, whenever invoking it. Therefore, there isn't any side effect.
-
 
 ## Object Oriented Programming     
 OOP is an important concept in modern programming. Three basic components in OOP are encapsulation, polymorphism and inheritance. 
@@ -573,6 +604,23 @@ main = {
 ```
 Only "public" properties and methods can be used outside the structure (class). "self" keyword is used to avoid naming confusion. It is used to refer the variable outside the scope. "del" keyword is used to delete one object.    
 
+### Explicit Generic Structure
+Like functions, structures can also be explicitly generic. Defining generic structure is just adding angle brackets after "struct" keyword. 
+Example:
+```
+Matrix = struct<T> {
+    mat: std.array
+    Matrix = (rows, columns){
+        self.mat = std.array<T>(rows, columns)
+    }
+    // Other methods
+}
+main = {
+    matrix = Matrix<i32>(50, 50) // A 50 * 50 matrix.
+}
+```
+This example uses std.array module. About this module, please refer to "StdLibrary.md".  
+
 ### Abstract Structure
 An abstract structure can contain anything that can be in a structure. It can also contain the declaration of methods (called abstract methods). It cannot be instantiated, but can be implemented by other structures.          
 Grammar:    
@@ -641,3 +689,46 @@ main = {
 ```
 
 ### Enumeration
+Enumeration is a special type of class. Usually it contains a set of constants.      
+Grammar:
+```
+[identifier] = enum {
+    [opt][opt][permission][/opt][enumerate definition][/opt] // Properties
+    ...
+    [opt][opt][permission][/opt][function definition][/opt] // Methods
+    ...
+    [opt][prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Initializer
+    [opt]~[prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+        [statement]
+        ...
+    }[/opt] // Deconstructor
+}
+```
+Example:
+```
+Book = enum {
+    Papery
+    Electronic
+}
+main = {
+    book = Book.Papery
+    println book // Papery
+}
+```
+Example 2:
+```
+Book = enum {
+    Papery: i32 // Has index
+    Electronic: string // Has URL
+}
+main = {
+    book = Book.Papery = 9612537
+    match book {
+        Book.Papery(i) -> println "The book index is " + i
+        Book.Electronic(s) -> println "The book URL is" + s
+    }
+}
+```
