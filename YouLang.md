@@ -19,6 +19,10 @@ Use back-slash("\") to keep the original meaning.
 - To build a system-level programming language without high expense.
 - To build a programming language with sort of flexibility. 
 
+## Source Code File
+In most conditions, the source code file name should have an extension "y". Modules must be named as this. Sometimes source code file which has other extension or no extension can be compiled, but it is not suggested.
+
+
 ## Hello World
 Most of the programming examples starts from "Hello, World!". Let me illustrate it in  Youlang.
 
@@ -101,7 +105,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, finally, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
+Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, finally, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, throw, to, true, try, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -468,7 +472,7 @@ Like explicitly defining the data type of a variable, defining the data type of 
 
 Example:
 ```
-gcd = (x: i32, y: i32){
+gcd = (x: i32, y: i32) -> i32 {
     r = x % y
     while r != 0 {
         x = y
@@ -689,7 +693,7 @@ main = {
 ```
 
 ### Enumeration
-Enumeration is a special type of class. Usually it contains a set of constants.      
+Enumeration is a special type of class. Usually it contains a set of constants. The constructor should not have parameters.      
 Grammar:
 ```
 [identifier] = enum {
@@ -697,11 +701,11 @@ Grammar:
     ...
     [opt][opt][permission][/opt][function definition][/opt] // Methods
     ...
-    [opt][prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+    [opt][prev identifier] = [{
         [statement]
         ...
     }[/opt] // Initializer
-    [opt]~[prev identifier] = [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+    [opt]~[prev identifier] = {
         [statement]
         ...
     }[/opt] // Deconstructor
@@ -732,3 +736,31 @@ main = {
     }
 }
 ```
+
+## Module
+Module is essential in building a large-scaled project. If one file need to function as a module, it should have one and only one public module and the module name should be the same as file name (without extension). Modules can be nested.    
+Grammar:
+```
+[identifier] = [opt]public[/opt] module {
+    [statement]
+    ...
+}
+```
+Example:
+```
+// File name: test
+test = public module {
+    hello = public {
+        println "Hello World!"
+    }
+}
+main = {
+    test.hello
+}
+```
+You can use "import" statement avoid the prefix. You can also use "*" to import all the public functions and variables in the module. However, it is not suggested.
+
+## Error handling
+
+
+## Pointer
