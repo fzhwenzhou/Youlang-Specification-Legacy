@@ -26,3 +26,21 @@ println! = (obj){}
 print_fmt! = (fmt, args...){}
 ```
 These macros are in general namespace.
+
+### Input
+Input stream package is also encapsulated, so you cannot access it directly.     
+Public Methods:
+```
+read = (buf: u8[]) -> u64
+read_fmt = (fmt: u8[], args...) -> u64
+```
+
+#### Standard Input
+Use "stdin" method in "io" module to get an input stream instance. You can also directly use it.     
+Actually methods defined in input stream package is hard to use, so we also provide some macros to simplify.
+```
+get! = (obj){} // Delimated by space
+getln! = (obj){}
+get_fmt! = (fmt, args...){}
+```
+These macros are also in general namespace.
