@@ -13,6 +13,7 @@ Output stream package is encapsulated, so you cannot access it directly.
 Public Methods: 
 ```
 write = (buf: u8[]) -> u64
+write_char = (c: u8) -> bool
 write_fmt = (fmt: u8[], args...) -> u64
 flush = () -> void
 ```
@@ -31,15 +32,17 @@ These macros are in general namespace.
 Input stream package is also encapsulated, so you cannot access it directly.     
 Public Methods:
 ```
-read = (buf: u8[]) -> u64
-read_fmt = (fmt: u8[], args...) -> u64
+read = (&buf: u8[]) -> u64
+read_char = () -> u8
+read_fmt = (fmt: u8[], &args...) -> u64
+eof = () -> bool
 ```
 
 #### Standard Input
 Use "stdin" method in "io" module to get an input stream instance. You can also directly use it.     
 Actually methods defined in input stream package is hard to use, so we also provide some macros to simplify.
 ```
-get! = (obj){} // Delimated by space
+get! = (obj, delimator = " "){} // Delimated by space
 getln! = (obj){}
 get_fmt! = (fmt, args...){}
 ```

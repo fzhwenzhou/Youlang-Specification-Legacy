@@ -105,7 +105,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, dynamic, else, enum, exec, false, finally, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, throw, to, true, try, unsafe, while.   
+Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, else, enum, exec, false, finally, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, throw, to, true, try, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -158,6 +158,19 @@ test_float = 12345 // Will be converted to float automatically.
 uninit_int: i32 // Uninitialized variable.
 ```
 This method is also applicable for defining an impure function. We will talk about it later.
+## Reference Variable
+A reference variable is also a reference to existing variable. The mutability of this variable is the same as the variable being referenced.       
+Grammar:
+```
+&[identifier] = [variable]
+```
+Example:
+```
+a = 5
+&b = a
+a = 6
+println b // 6
+```
 
 ## Arithmetic
 Arithmetic is what you expected in mathematics.    
@@ -392,7 +405,7 @@ else {
 This is also applicable for strings.
 
 ## Function
-Function is an important component in procedure oriented programming. Every program starts from "main" function, the starting point. In Youlang, the form of defining a function is almost the same as defining a closure. One function can have multiple return values (separated by commas). But actually, it is returning a tuple containing these values.    
+Function is an important component in procedure oriented programming. Every program starts from "main" function, the starting point. In Youlang, the form of defining a function is almost the same as defining a closure. One function can have multiple return values (separated by commas). But actually, it is returning a tuple containing these values. The default way of passing arguments to parameters is by value. If you want to pass them by reference, simply add "&" before the parameter.    
 
 The grammar is as follows:
 ```
@@ -422,10 +435,14 @@ hello_world = {
 swap = (a, b){
     b, a
 }
+swap_param = (&a, &b){
+    a, b = b, a
+}
 main = {
     println fib(10) // 55
     hello_world // Hello, World!
     a, b = swap(1, 2) // a is 2, b is 1.
+    swap(a, b) // a is 1, b is 2.
 }
 ```
 
@@ -434,7 +451,7 @@ Function prototype and function overload is not present in Youlang. Function pro
 ### Lambda Function
 Lambda functions are almost the same as other functions. The grammar is as follows:    
 ```
-lambda [opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
+[opt if no parameter]([opt][parameter][/opt][opt], ...[/opt])[/opt]{
     [statement]
     ...
 }
@@ -613,9 +630,9 @@ Like functions, structures can also be explicitly generic. Defining generic stru
 Example:
 ```
 Matrix = struct<T> {
-    mat: std.array
+    mat: T[][]
     Matrix = (rows, columns){
-        self.mat = std.array<T>(rows, columns)
+        self.mat = T[rows][columns]
     }
     // Other methods
 }
@@ -623,7 +640,7 @@ main = {
     matrix = Matrix<i32>(50, 50) // A 50 * 50 matrix.
 }
 ```
-This example uses std.array module. About this module, please refer to "StdLibrary.md".  
+
 
 ### Abstract Structure
 An abstract structure can contain anything that can be in a structure. It can also contain the declaration of methods (called abstract methods). It cannot be instantiated, but can be implemented by other structures.          
@@ -729,7 +746,7 @@ Book = enum {
     Electronic: string // Has URL
 }
 main = {
-    book = Book.Papery = 9612537
+    book = Book.Papery(9612537) // Initialize the value
     match book {
         Book.Papery(i) -> println "The book index is " + i
         Book.Electronic(s) -> println "The book URL is" + s
@@ -760,7 +777,57 @@ main = {
 ```
 You can use "import" statement avoid the prefix. You can also use "*" to import all the public functions and variables in the module. However, it is not suggested.
 
-## Error handling
+Example:
+```
+import std.io
+main = {
+    io.stdout().write("Hello, World!\n")
+}
+```
 
+## Error handling
+Error handling is used to handle thrown errors. If one error is caused by undefined behavior, this approach would not work. If one thrown error is not handled, the compiler will insert a minimum runtime to the program to handle this error (and this can also be disabled).      
+Grammar:
+```
+[value|variable]! // Throw an error
+try {
+    [statement]
+    ...
+}
+catch ([identifier][opt]: [type][/opt]) {
+    [statement]
+    ...
+}
+...
+[opt]
+finally {
+    [statement]
+    ...
+}
+[/opt]
+```
+Example:
+```
+main = {
+    a, b: i32
+    try {
+        get_fmt "{} {}", a, b
+        if b == 0 {
+            "Divide by zero!"!
+        }
+        println a / b
+    }
+    catch (e: std.err.ioexception) {
+        println "Cannot get from input!"
+    }
+    catch (e) {
+        println e
+    }
+    finally {
+        println "The program ends."
+    }
+}
+```
+This example uses "err" module in the standard library. To learn more about this, please refer to "StdLibrary.md".
 
 ## Pointer
