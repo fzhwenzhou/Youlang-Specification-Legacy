@@ -496,7 +496,7 @@ gcd = (x: i32, y: i32) -> i32 {
         y = r
         r = x % y
     }
-    i32(y) // Not necessary because y itself is i32. In Youlang, type casting is just like invoking an function.
+    y
 }
 main = {
     println gcd(5, 15) // 5
@@ -794,7 +794,7 @@ try {
     [statement]
     ...
 }
-catch ([identifier][opt]: [type][/opt]) {
+catch [identifier][opt]: [type][/opt] {
     [statement]
     ...
 }
@@ -817,10 +817,10 @@ main = {
         }
         println a / b
     }
-    catch (e: std.err.ioexception) {
+    catch e: std.err.ioexception {
         println "Cannot get from input!"
     }
-    catch (e) {
+    catch e {
         println e
     }
     finally {
@@ -830,4 +830,41 @@ main = {
 ```
 This example uses "err" module in the standard library. To learn more about this, please refer to "StdLibrary.md".
 
+## Operator Overloading
+Although you cannot overload a function due to ambiguity, overloading operators is allowed. The number of the argument is exactly the number of argument that the operator requires. If it appears in a structure, then the first parameter can be omitted and automatically set to self.     
+Grammar:
+```
+operator[operator].unary.left = [function] // Unary operator which is on the left.
+operator[operator].unary.right = [function] // Unary operator which is on the right.
+operator[operator].binary = [function] // Binary operator
+operator[operator] = [function] // Other operators including parenthesis.
+// You cannot overload ternary operators directly.
+```
+Operator that cannot be overloaded: . (dot), # (hash).           
+Example:
+```
+Complex = struct {
+    real: f64
+    imagine: f64
+    Complex = (real, imagine) {
+        self.real = real
+        self.imagine = imagine
+    }
+    get_real = {
+        return real
+    }
+    get_imagine = {
+        return imagine
+    }
+    operator+.binary = (other: Complex) {
+        return Complex(real + other.get_real(), imagine + other.get_imagine())
+    }
+}
+main = {
+    a = Complex(1, 2)
+    b = Complex(3, 4)
+    c = a + b
+    print_fmt "The result is {} + {}j", c.get_real(), c.get_imagine()
+}
+```
 ## Pointer
