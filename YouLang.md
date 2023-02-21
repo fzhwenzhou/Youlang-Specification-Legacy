@@ -158,6 +158,7 @@ test_float = 12345 // Will be converted to float automatically.
 uninit_int: i32 // Uninitialized variable.
 ```
 This method is also applicable for defining an impure function. We will talk about it later.
+
 ## Reference Variable
 A reference variable is also a reference to existing variable. The mutability of this variable is the same as the variable being referenced.       
 Grammar:
@@ -170,6 +171,24 @@ a = 5
 &b = a
 a = 6
 println b // 6
+```
+## Static Variable
+A static variable is a variable in a function that is not destroyed after the function ends. Therefore, you can use the previous value.      
+Grammar:
+```
+static [[[identifier][opt]: [data type][/opt] [opt if uninitialized]]][opt], ..[/opt]= [value|expression][/opt][opt], ..[/opt]
+```
+Example:
+```
+f = {
+    static i = 1
+    println i
+    i += 1
+}
+main = {
+    f // 1
+    f // 2
+}
 ```
 
 ## Arithmetic
@@ -529,7 +548,7 @@ main = {
 ```
 
 ### Variadic Argument List
-There could be at most one variadic argument list. And the variadic argument list must be at the end of all the arguments. The argument list will be regarded as an array in the function. All of the elements' data types must be the same.     
+There could be at most one variadic argument list. And the variadic argument list must be at the end of all the arguments. The argument list will be regarded as a tuple in the function.     
 Here is the grammar:
 ```
 [identifier] = ([[opt][parameter][/opt][opt], ...[/opt], [parameter]\.\.\.]) {
@@ -624,6 +643,9 @@ main = {
 }
 ```
 Only "public" properties and methods can be used outside the structure (class). "self" keyword is used to avoid naming confusion. It is used to refer the variable outside the scope. "del" keyword is used to delete one object.    
+
+### Static Property and Method
+After adding "static" keyword before a property or a method, this property or method could be used without instancing the structure. It will also not be destroyed by deleting an object.
 
 ### Explicit Generic Structure
 Like functions, structures can also be explicitly generic. Defining generic structure is just adding angle brackets after "struct" keyword. 
@@ -850,10 +872,10 @@ Complex = struct {
         self.real = real
         self.imagine = imagine
     }
-    get_real = {
+    public get_real = {
         return real
     }
-    get_imagine = {
+    public get_imagine = {
         return imagine
     }
     operator+.binary = (other: Complex) {
