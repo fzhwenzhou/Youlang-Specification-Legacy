@@ -10,7 +10,7 @@ Use "[[]]" to specify a code block.
 "[statement returns type]" is used to indicate that the statement returns a specific type of a kind of type(like integer).     
 ".." is used to duplicate the previous block or statement (but not literal or [opt]) for 1 time.
 Some logical symbols: &(and), |(or), !(not)     
-Use back-slash("\") to keep the original meaning.
+Use back-slash("\\") to keep the original meaning.
 
 ## Purpose
 
@@ -34,7 +34,7 @@ main = {
 
 We will explain it later.
 ## Basic Grammar
-The statements are separated by semicolons( ; ). However, the semicolon at the end of one line can be omitted. Use back-slash("\") to continue a line. 
+The statements are separated by semicolons(";"). However, the semicolon at the end of one line can be omitted. Use back-slash("\\") to continue a line. 
 A code block starts with "{" and ends with "}".
 
 
@@ -43,7 +43,7 @@ A code block starts with "{" and ends with "}".
 A single line comment starts with "//".
 
 ### Multiline Comment
-A multiline comment starts with "/*" and ends with "*/".   
+A multiline comment starts with "/\*" and ends with "\*/".   
 Note that comments can be nested, which make the code block easier to be commented out.
 
 Here is one example.
@@ -81,7 +81,7 @@ Available option: char.
 An integer is a sequence of number without decimal points. If you want to specify the integer's type, just add the type name after the integer, like 123i8. Any integer without postfix has the type depending on it's usage. And if the usage is not specified, it is by default i32, and expands to i64 if the literal exceeds 2 ^ 31 - 1, and expands to i128 if the literal exceeds 2 ^ 63 - 1, and expands to u128 if the literal exceeds 2 ^ 127 - 1. Otherwise, it will throw an error.
 
 ### Floats
-A float is a sequence of number with one decimal point. If you want to specify the float's tye, just add the type name after the float, like 1.0f32. Any float without postfix has the type depending on it's usage. And if the usage is not specified, it is by default f64.    
+A float is a sequence of number with one decimal point. If you want to specify the float's type, just add the type name after the float, like 1.0f32. Any float without postfix has the type depending on it's usage. And if the usage is not specified, it is by default f64.    
 
 ### Boolean
 A boolean is represented by "true" or "false".   
