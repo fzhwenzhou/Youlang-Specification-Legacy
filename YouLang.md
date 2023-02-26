@@ -860,6 +860,7 @@ operator[operator].unary.left = [function] // Unary operator which is on the lef
 operator[operator].unary.right = [function] // Unary operator which is on the right.
 operator[operator].binary = [function] // Binary operator
 operator[operator] = [function] // Other operators including parenthesis.
+operator""[identifier] = [function] // Literal postfix
 // You cannot overload ternary operators directly.
 ```
 Operator that cannot be overloaded: . (dot), # (hash).           
@@ -889,4 +890,83 @@ main = {
     print_fmt "The result is {} + {}j", c.get_real(), c.get_imagine()
 }
 ```
+
+## Manual Memory Allocation
+Arrays are allocated on stack. Sometimes you want an array to be allocated on heap or don't know the size of the array. Then you can use manual memory allocation. It is actually some kind of encapsulation of the pointer to some allocated memory, in order to avoid some dangerous operations. You can use "del" keyword to free the memory.       
+It can be created like arrays.      
+Grammar: 
+```
+[identifier] = [data type]\[[dimension]\]...[opt]([initial value])[/opt]
+// Or just declare one
+[identifier]: [data type]\[\]...
+```
+Example:
+```
+main = {
+    N: i32
+    get N
+    a = i32[N]
+    for i in 0 to N - 1 {
+        get a[i]
+    }
+    std.sort(a)
+    for i in a {
+        print_fmt "{} ", i
+    }
+    println
+}
+```
+
 ## Pointer
+Pointer is a data type that stores the memory address of some variable. It is not suggested to be used in most of the programs because it is really dangerous. However, sometimes we have to use this to implement some low-level functions.       
+Grammar:
+```
+// Decalre a pointer
+[identifier]: [data type]*
+// Assign a pointer
+[identifier] = &[variable]
+// Use a pointer's value
+*[pointer]
+// Or like an array
+[pointer]\[[value|expression]\]
+```
+Example:
+```
+main = {
+    a = 5
+    p = &a
+    println p // The address of a
+    println *p // 5
+}
+```
+
+## Asynchronized
+
+## Synchronized
+
+## Preprocessor
+This section is for the compiler preprocessor. The function of preprocessor is to manipulate the original source code and produce some code that can be directly processed by the compiler. The preprocessor starts with a hash tag (#).      
+
+### No Standard Library
+With "#no_std", the compiler will opt out the standard library. This means that you cannot use all the functions in the standard library, and cannot use "in" keyword and ranges except the definition of "for" loops.     
+
+### Assembly
+With "#asm", the compiler will regard the next statement or code block as assembly code. You need to add "unsafe" keyword before the statement or the code block using assembly code.     
+Example:
+```
+add = (a: i32, b: i32) { // Should declare the type explicitly
+    res: i32
+    // aarch64 assembly
+    #asm {
+        ldr x1, a
+        ldr x2, b
+        add x0, x1, x2
+        str x0, res
+    }
+    return res
+}
+```
+
+### C Interop
+
+### Macro

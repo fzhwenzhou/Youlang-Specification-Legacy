@@ -23,7 +23,7 @@ Use "stdout" method in "io" module to get an output stream instance. You can als
 There are some macros to simplify this process.      
 ```
 print! = (obj){}
-println! = (obj){}
+println! = (obj...){}
 print_fmt! = (fmt, args...){}
 ```
 These macros are in general namespace.
@@ -42,7 +42,7 @@ eof = () -> bool
 Use "stdin" method in "io" module to get an input stream instance. You can also directly use it.     
 Actually methods defined in input stream package is hard to use, so we also provide some macros to simplify.
 ```
-get! = (obj, delimator = " "){} // Delimated by space
+get! = (obj, delimator = std.whitespace){} // Delimated by space, tab, or new-line
 getln! = (obj){}
 get_fmt! = (fmt, args...){}
 ```
