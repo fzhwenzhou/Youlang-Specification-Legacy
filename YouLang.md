@@ -15,7 +15,7 @@ Use back-slash("\\") to keep the original meaning.
 ## Purpose
 
 - To build a multi-paradigm programming language.
-- To build a easy-to-use programming language.
+- To build an easy-to-use programming language.
 - To build a system-level programming language without high expense.
 - To build a programming language with sort of flexibility. 
 
