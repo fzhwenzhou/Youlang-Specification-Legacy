@@ -24,7 +24,7 @@ In most conditions, the source code file name should have an extension "y". Modu
 
 
 ## Hello World
-Most of the programming examples starts from "Hello, World!". Let me illustrate it in  Youlang.
+Most of the programming examples starts from "Hello, World!". Let me illustrate it in Youlang.
 
 ```
 main = {
@@ -56,6 +56,9 @@ Here is one example.
 ```
 
 ## Primitive Data Types
+### Void
+Void means no data type. It is often used in function definitions rather than variable definitions.
+
 ### Integers
 The prefix of signed integers is "i" and the prefix of unsigned integers is "u".    
 After the prefix is the number of bits used to store the integer.    
@@ -105,7 +108,7 @@ Grammar:
 Identifiers could include (UTF-8)letters, numbers and underlines. An identifier must starts with a letter or an underline. "k_many123", "__init", "哈哈" are all valid identifiers. Note that the third identifier is not recommended.
 
 ## Reserved Words
-Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, else, enum, exec, false, finally, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, throw, to, true, try, unsafe, while.   
+Reserved words are words that cannot be used as identifiers. These words are: abstract, async, await, break, by, catch, const, continue, del, else, enum, exec, false, finally, for, goto, if, immut, implements, import, in, inner, lambda, match, module, public, return, self, static, struct, super, to, true, try, unsafe, while.   
 
 ## Goto
 Goto is a keyword that is useless. It is listed in the reserved words because we do not want programmers to define it or implement it. As in many programming languages, it is harmful for designing.
@@ -446,7 +449,7 @@ To use a function's return value in other statements, the bracket cannot be igno
 Example:
 ```
 fib = (n){
-    n == 0 or n == 1 ? n : fib(n - 1) + fib(n - 2)
+    n == 0 || n == 1 ? n : fib(n - 1) + fib(n - 2)
 }
 hello_world = {
     println "Hello, World!"
@@ -504,7 +507,7 @@ main = {
 ```
 
 ### Explicit Data Type
-Like explicitly defining the data type of a variable, defining the data type of function parameters also uses colons.  
+Like explicitly defining the data type of a variable, defining the data type of function parameters also uses colons. You can also define the return type by using the symbol "->" before the type name. 
 
 Example:
 ```
@@ -808,7 +811,7 @@ main = {
 ```
 
 ## Error handling
-Error handling is used to handle thrown errors. If one error is caused by undefined behavior, this approach would not work. If one thrown error is not handled, the compiler will insert a minimum runtime to the program to handle this error (and this can also be disabled).      
+Error handling is used to handle thrown errors. If one error is caused by undefined behavior, this approach would not work. If one thrown error is not handled, the compiler will insert a minimum runtime to the program to handle this error (and this can also be disabled). Use "!" following a statement to throw an error.      
 Grammar:
 ```
 [value|variable]! // Throw an error
@@ -874,13 +877,13 @@ Complex = struct {
         self.imagine = imagine
     }
     public get_real = {
-        return real
+        real
     }
     public get_imagine = {
-        return imagine
+        imagine
     }
     operator+.binary = (other: Complex) {
-        return Complex(real + other.get_real(), imagine + other.get_imagine())
+        Complex(real + other.get_real(), imagine + other.get_imagine())
     }
 }
 main = {
@@ -918,7 +921,7 @@ main = {
 ```
 
 ## Pointer
-Pointer is a data type that stores the memory address of some variable. It is not suggested to be used in most of the programs because it is really dangerous. However, sometimes we have to use this to implement some low-level functions.       
+Pointer is a data type that stores the memory address of some variable. It is not suggested to be used in most of the programs because it is really dangerous. However, sometimes we have to use this to implement some low-level functions. The operator "->" is overloaded here to call the member functions or get the properties.       
 Grammar:
 ```
 // Decalre a pointer
@@ -932,11 +935,24 @@ Grammar:
 ```
 Example:
 ```
+Point = struct {
+    x, y: i32
+    get_x = {
+        x
+    }
+    get_y = {
+        y
+    }
+}
 main = {
     a = 5
     p = &a
     println p // The address of a
     println *p // 5
+    pt = Point(x := 5, y := 3)
+    ptr_pt = &pt
+    println (*pt).get_x() + (*pt).get_y() // 8
+    println pt->get_x() + pt->get_y() // The same as above
 }
 ```
 
@@ -950,6 +966,9 @@ This section is for the compiler preprocessor. The function of preprocessor is t
 ### No Standard Library
 With "#no_std", the compiler will opt out the standard library. This means that you cannot use all the functions in the standard library, and cannot use "in" keyword and ranges except the definition of "for" loops.     
 
+### No Array-Out-Of-Bound Check
+With "#no_array_check" before the declaration of an array or a code block, the program will not check if it is out of bound at runtime.
+
 ### Assembly
 With "#asm", the compiler will regard the next statement or code block as assembly code. You need to add "unsafe" keyword before the statement or the code block using assembly code.     
 Example:
@@ -957,7 +976,7 @@ Example:
 add = (a: i32, b: i32) { // Should declare the type explicitly
     res: i32
     // aarch64 assembly
-    #asm {
+    unsafe #asm {
         ldr x1, a
         ldr x2, b
         add x0, x1, x2
@@ -968,5 +987,25 @@ add = (a: i32, b: i32) { // Should declare the type explicitly
 ```
 
 ### C Interop
+With "#c_header", the compiler will include the declarations and definitions of identifiers in the header file. Note that you'll might need to link the object file together manually if the library is not in the library path. You may ensure that the header file is in the same folder or in the include path.    
+Example:      
+add.c
+```C
+int add(int a, int b) {
+    return a + b;
+}
+```
+add.h
+```C
+int add(int a, int b);
+```
+Test Youlang file
+```
+#c_header add.h
+main = {
+    a, b = 2, 3
+    println add(a, b)
+}
+```
 
 ### Macro
